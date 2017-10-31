@@ -1,7 +1,11 @@
-# Insert chapter 2 title here
+# Learning diary
 
 *Describe the work you have done this week and summarize your learning.*
 
 - Describe your work and results clearly. 
 - Assume the reader has an introductory course level understanding of writing and reading R code as well as statistical methods
 - Assume the reader has no previous knowledge of your data or the more advanced methods you are using  
+
+This is the first entry in the in the learning diary. The first lecture introduced basic methods of collaboration such as using Git for your code and writing reports using Markdown and Knitr. I have used these before, but I'm more familiar using them in UNIX than with Windows computers. I felt quite clumsy these, as in my own PhD project I don't need to collaborate on the methods part as much. I chose to use Git hub desktop and RStudio as it was recommended in the course materials.
+
+ 
