@@ -1,8 +1,8 @@
 ---
-title: "IODS course project"
+title: "Tuure Parviainen"
 output:
   html_document:
-    theme: cosmo
+    theme: simplex
     toc: true
     toc_depth: 2
     fig_caption: true

@@ -8,4 +8,6 @@
 
 This is the first entry in the in the learning diary. The first lecture introduced basic methods of collaboration such as using Git for your code and writing reports using Markdown and Knitr. I have used these before, but I'm more familiar using them in UNIX than with Windows computers. I felt quite clumsy these, as in my own PhD project I don't need to collaborate on the methods part as much. I chose to use Git hub desktop and RStudio as it was recommended in the course materials.
 
+I also went through the R Short and Sweet. I think only trouble was with last assignment. I think my approach of function was in different order and it didn't accept it at first. Finally I achieved to a solution that satisfied the test. I'm curious to see how the course will develop in the future.
+
  
