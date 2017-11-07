@@ -119,16 +119,20 @@ $(document).ready(function () {
 </div>
 
 
-<div id="learning-diary" class="section level1">
-<h1>Learning diary</h1>
+<div id="chapter-2." class="section level2">
+<h2>Chapter 2.</h2>
 <p><em>Describe the work you have done this week and summarize your learning.</em></p>
 <ul>
 <li>Describe your work and results clearly.</li>
 <li>Assume the reader has an introductory course level understanding of writing and reading R code as well as statistical methods</li>
 <li>Assume the reader has no previous knowledge of your data or the more advanced methods you are using</li>
 </ul>
-<p>This is the first entry in the in the learning diary. The first lecture introduced basic methods of collaboration such as using Git for your code and writing reports using Markdown and Knitr. I have used these before, but I’m more familiar using them in UNIX than with Windows computers. I felt quite clumsy these, as in my own PhD project I don’t need to collaborate on the methods part as much. I chose to use Git hub desktop and RStudio as it was recommended in the course materials.</p>
-<p>I also went through the R Short and Sweet. I think only trouble was with last assignment. I think my approach of function was in different order and it didn’t accept it at first. Finally I achieved to a solution that satisfied the test. I’m curious to see how the course will develop in the future.</p>
+<p>I moved to the next set excercises DataCamp: Regression and model validation. The exercises were quite interesting and showed some things that I didn’t know before.</p>
+<pre class="r"><code>library(ggplot2)
+p &lt;-ggpairs(learning2014, mapping = aes(col = gender, alpha = 0.3), lower = list(combo = wrap(&quot;facethist&quot;, bins = 20)))
+
+# Data exploration of the learning2014 with ggpairs</code></pre>
+<p>I found this code quite useful for getting an overview of the data. I have previously used a more simple plotting tools for initial analysis such as correlation or histograms separately, but I might use this one again since it provides insight with only one figure.</p>
 </div>
 
 
