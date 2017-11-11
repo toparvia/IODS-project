@@ -134,6 +134,40 @@ p &lt;-ggpairs(learning2014, mapping = aes(col = gender, alpha = 0.3), lower = l
 # Data exploration of the learning2014 with ggpairs</code></pre>
 <p>I found this code quite useful for getting an overview of the data. I have previously used a more simple plotting tools for initial analysis such as correlation or histograms separately, but I might use this one again since it provides insight with only one figure.</p>
 </div>
+<div id="rstudio-exercise-2" class="section level1">
+<h1>RStudio Exercise 2</h1>
+<p>I looked in to the data provided by the excercise. The data has a huge number of different parameters, point estimates and some categorial variables. I used the common commands for simple analysis.</p>
+<pre class="r"><code>require(readr)
+PKY &lt;- read_delim(&quot;http://www.helsinki.fi/~kvehkala/JYTmooc/JYTOPKYS3-data.txt&quot;, &quot;\t&quot;, escape_double = FALSE, trim_ws = TRUE)
+#working directory to source file location
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path)) #works in Rstudio only
+
+dim(PKY) #dimensions of the data
+str(PKY) #structure of the data
+summary(PKY) #summary of the data</code></pre>
+<p>I used also some other methods for data exploration, but I’ll write about those in the end of this excercise.</p>
+<pre class="r"><code>library(data.table)
+
+gender      &lt;- data.table(PKY$gender)
+age         &lt;- data.table(PKY$Age)
+attitude    &lt;- data.table(PKY)[, .(Da+Db+Dc+Dd+De+Df+Dg+Dh+Di+Dj)]
+attitude    &lt;- attitude/10
+deep        &lt;- data.table(PKY)[, .(D03+D11+D19+D27+D07+D14+D22+D30+D06+D15+D23+D31)]
+deep        &lt;- deep/12
+surf        &lt;- data.table(PKY)[, .(SU02+SU10+SU18+SU26+SU05+SU13+SU21+SU29+SU08+SU16+SU24+SU32)]
+surf        &lt;- surf/12
+stra        &lt;- data.table(PKY)[, .(ST01+ST09+ST17+ST25+ST04+ST12+ST20+ST28)]
+stra        &lt;- stra/8
+points      &lt;- data.table(PKY$Points)
+learn2014   &lt;- data.table(cbind(gender, age, attitude, deep, stra, surf, points))
+colnames(learn2014) &lt;- c(&quot;gender&quot;, &quot;age&quot;, &quot;attitude&quot;, &quot;deep&quot;, &quot;stra&quot;, &quot;surf&quot;, &quot;points&quot;)
+
+learn2014   &lt;- learn2014[points &gt;0]
+# deep[, mean(V1)] #to calculate number out of data.table
+
+summary(learn2014)</code></pre>
+<p>I produced the required data for with data.table, which I had used only briefly before. I thought this is good place to practice. However, I think I could have written this as one command, but I felt more confident doing this as one phase at the time.</p>
+</div>
 
 
 

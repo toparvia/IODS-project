@@ -17,4 +17,48 @@ p <-ggpairs(learning2014, mapping = aes(col = gender, alpha = 0.3), lower = list
 I found this code quite useful for getting an overview of the data. I have previously used a more simple plotting tools for initial analysis such as correlation or histograms separately, but I might use this one again since it provides insight with only one figure.
 
 
- 
+# RStudio Exercise 2
+
+I looked in to the data provided by the excercise. The data has a huge number of different parameters, point estimates and some categorial variables. I used the common commands for simple analysis.
+
+```{r, eval=FALSE}
+require(readr)
+PKY <- read_delim("http://www.helsinki.fi/~kvehkala/JYTmooc/JYTOPKYS3-data.txt", "\t", escape_double = FALSE, trim_ws = TRUE)
+#working directory to source file location
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path)) #works in Rstudio only
+
+dim(PKY) #dimensions of the data
+str(PKY) #structure of the data
+summary(PKY) #summary of the data
+```
+I used also some other methods for data exploration, but I'll write about those in the end of this excercise.
+
+```{r, eval=FALSE}
+library(data.table)
+
+gender      <- data.table(PKY$gender)
+age         <- data.table(PKY$Age)
+attitude    <- data.table(PKY)[, .(Da+Db+Dc+Dd+De+Df+Dg+Dh+Di+Dj)]
+attitude    <- attitude/10
+deep        <- data.table(PKY)[, .(D03+D11+D19+D27+D07+D14+D22+D30+D06+D15+D23+D31)]
+deep        <- deep/12
+surf        <- data.table(PKY)[, .(SU02+SU10+SU18+SU26+SU05+SU13+SU21+SU29+SU08+SU16+SU24+SU32)]
+surf        <- surf/12
+stra        <- data.table(PKY)[, .(ST01+ST09+ST17+ST25+ST04+ST12+ST20+ST28)]
+stra        <- stra/8
+points      <- data.table(PKY$Points)
+learn2014   <- data.table(cbind(gender, age, attitude, deep, stra, surf, points))
+colnames(learn2014) <- c("gender", "age", "attitude", "deep", "stra", "surf", "points")
+
+learn2014   <- learn2014[points >0]
+
+
+summary(learn2014)
+```
+I produced the required data for with data.table, which I had used only briefly before. I thought this is good place to practice. However, I think I could have written this as one command, but I felt more confident doing this as one phase at the time.
+
+
+
+
+
+
