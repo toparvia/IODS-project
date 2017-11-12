@@ -35,7 +35,7 @@ I used also some other methods for data exploration, but I'll write about those 
 
 ```{r, eval=FALSE}
 library(data.table)
-
+#Here we make each of the needed variables for practice
 gender      <- data.table(PKY$gender)
 age         <- data.table(PKY$Age)
 attitude    <- data.table(PKY)[, .(Da+Db+Dc+Dd+De+Df+Dg+Dh+Di+Dj)]
@@ -47,15 +47,47 @@ surf        <- surf/12
 stra        <- data.table(PKY)[, .(ST01+ST09+ST17+ST25+ST04+ST12+ST20+ST28)]
 stra        <- stra/8
 points      <- data.table(PKY$Points)
+#Combining variables to one data.table
 learn2014   <- data.table(cbind(gender, age, attitude, deep, stra, surf, points))
+#giving column names for the data.table
 colnames(learn2014) <- c("gender", "age", "attitude", "deep", "stra", "surf", "points")
-
+#removing the values with the points of zero
 learn2014   <- learn2014[points >0]
-
-
-summary(learn2014)
+#writing the file to the data folder
+write.csv(learn2014, file = "data/learn2014.csv")
+#reading the table
+learn2014_reloaded <- read.csv(file = "data/learn2014.csv")
+#showing the data summary with reloaded data
+summary(learn2014_reloaded)
 ```
-I produced the required data for with data.table, which I had used only briefly before. I thought this is good place to practice. However, I think I could have written this as one command, but I felt more confident doing this as one phase at the time.
+I produced the required data for with data.table -package, which I had used only briefly before. I thought this is good place to practice. However, I think I could have written this as one command, but I felt more confident doing this as one phase at the time. Next we start the analysis of the data.
+# Data analysis
+
+```{r, message=FALSE}
+learn2014 <- read.csv(file = "data/learn2014.csv")
+require(GGally)
+require(ggplot2)
+
+#This function enables running linear regression to each parameter combination and comparison with loess (locally weighted scatterplot smoothing) to observe non-linear relationships between parameters, and their correlation for ggplot2 and GGally packages.
+my_fn <- function(data, mapping, ...){
+  p <- ggplot(data = data, mapping = mapping) +
+    geom_point() +
+    geom_smooth(method=loess, fill="red", color="red", ...) +
+    geom_smooth(method=lm, fill="blue", color="blue", ...)
+  p
+}
+g = ggpairs(learn2014,columns = c(2:7), lower = list(continuous = my_fn))
+g
+# Here we can see that combined parameters don't have high correlation between each other, and parameters compared to points, show linear positive relationship other than age and surf. Sex is excluded in this picture.
+#Distributions of data look normally distritubed, at least roughly. Age is not normally distributed, perhaps it could be poisson distribution.
+p <-ggpairs(learn2014, mapping = aes(col = gender, alpha = 0.3), lower = list(combo = wrap("facethist", bins = 20)))
+p
+#Sex seems to affect attitude the most however these differences look rather small.
+
+
+
+```
+
 
 
 

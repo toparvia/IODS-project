@@ -1,4 +1,4 @@
-install.packages(c("ggplot2", "GGally", "readr", "ggcorrplot", "caret"))
+#install.packages(c("ggplot2", "GGally", "readr", "ggcorrplot", "caret"))
 #libraries used
 library(readr)
 library(ggplot2)
@@ -79,7 +79,7 @@ g
 # st_os    Organized Studying        ST01+ST09+ST17+ST25
 # st_tm    Time Management           ST04+ST12+ST20+ST28
 
-install.packages("data.table")
+#install.packages("data.table")
 library(data.table)
 
 gender      <- data.table(PKY$gender)
@@ -100,5 +100,24 @@ learn2014   <- learn2014[points >0]
 # deep[, mean(V1)] #to calculate number out of data.table
 
 summary(learn2014)
+#Correlations
+p <-ggpairs(learn2014, mapping = aes(col = gender, alpha = 0.3), lower = list(combo = wrap("facethist", bins = 20)))
+p
+
 g = ggpairs(learn2014,columns = c(2:7), lower = list(continuous = my_fn))
 g
+
+m1 <- lm(points ~ attitude*deep*stra*surf+age, data=learn2014)
+step(m1)
+m2 <- lm(points ~ attitude + stra + surf + age + attitude:stra + 
+           attitude:surf + stra:surf + attitude:stra:surf, data = learn2014)
+m3 <- lm(points ~ attitude+deep+stra+surf+age, data=learn2014)
+m4 <- lm(points ~ attitude + stra + age, data = learn2014)
+m5 <- lm(points ~ attitude + stra, data = learn2014)
+m6 <- lm(points ~ attitude + stra + gender, data = learn2014)
+AIC(m1,m2,m3,m4,m5,m6)
+#By Akaike's information criteria, the model with the best fit is m5, since it is also most parsimonius.
+plot(m5)
+#Model looks good. Residuals have quite even distribution on both sides of zero and there are only few outliers.
+summary(m5)
+# Attitude is highly significant and stra is border case with p > 0.09. Model explains only 20 % of variation of the data.
