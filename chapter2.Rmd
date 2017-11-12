@@ -5,7 +5,6 @@
 - Describe your work and results clearly. 
 - Assume the reader has an introductory course level understanding of writing and reading R code as well as statistical methods
 - Assume the reader has no previous knowledge of your data or the more advanced methods you are using  
-
 I moved to the next set excercises DataCamp: Regression and model validation. The exercises were quite interesting and showed some things that I didn't know before.
 
 ```{r, eval=FALSE}
@@ -31,7 +30,7 @@ dim(PKY) #dimensions of the data
 str(PKY) #structure of the data
 summary(PKY) #summary of the data
 ```
-I used also some other methods for data exploration, but I'll write about those in the end of this excercise.
+I used also some other methods for data exploration, but I'll write about those in the end of this excercise together with the data analysis.
 
 ```{r, eval=FALSE}
 library(data.table)
@@ -84,11 +83,62 @@ p <-ggpairs(learn2014, mapping = aes(col = gender, alpha = 0.3), lower = list(co
 p
 #Sex seems to affect attitude the most however these differences look rather small.
 
-
+#I chose the model parameters based on the data exploration I did before.
+#Attitude looked promising so it was in all the models.
+m1 <- lm(points ~ attitude*deep*stra*surf+age, data=learn2014)
+m2 <- lm(points ~ attitude + stra + surf + age + attitude:stra + 
+           attitude:surf + stra:surf + attitude:stra:surf, data = learn2014)
+m3 <- lm(points ~ attitude+deep+stra+surf+age, data=learn2014)
+m4 <- lm(points ~ attitude + stra + age, data = learn2014)
+m5 <- lm(points ~ attitude + stra, data = learn2014)
+m6 <- lm(points ~ attitude + stra + gender, data = learn2014)
+AIC(m1,m2,m3,m4,m5,m6)
+#By Akaike's information criteria, the model with the best fit is m5, since it is also most parsimonius.
+par(mfrow=c(2,2))
+plot(m5)
+#Model looks good. Residuals have quite even distribution on both sides of zero and there are only few outliers. The included parameters probably fulfil the normality asumption and are good predictor combination, since their correlation was low with each other (<0.06).
+drop1(m5)
+#to test whether more parameters would need to be dropped to improve the model.
+#Looks like we have the most parsimonious model with the lowest AIC.
+summary(m5)
+# Attitude (Global attitude toward statistics) is highly significant and stra (Organized Studying and Time management) is border case with p > 0.09. Model explains only 20 % of variation of the data. Perhaps further data wrangling might be in order or using better models.
 
 ```
+# Extra
+I did some analysis to find the predictors of the full data, just out interest. I found a different set of predictors that were correlating with the points. 
 
+```{r, eval=FALSE}
+library(caret) #findCorrelation algorithm
+library(ggcorrplot) #plot the correlations
+#PKY is the full dataset
+PKY2 <- PKY[-60] # removing the sex
+correlations <- abs(cor(PKY2, use="pairwise.complete.obs"))
+#correlation of all parameters with positive numbers
+correlations.selected <- findCorrelation(correlations, cutoff = .7, exact = TRUE)
+#colums with to select by cutoff 0.7
+corr <- cor(PKY2[c(correlations.selected,59)])
+#correlations of narrow selection and points variable
 
+# Ploting correaltions
+ggcorrplot(corr, hc.order = TRUE, 
+           type = "lower", 
+           lab = TRUE, 
+           lab_size = 3, 
+           method="circle", 
+           colors = c("tomato2", "white", "springgreen3"), 
+           title="Correlogram of PKY", 
+           ggtheme=theme_bw)
+
+```
+What does this do? It takes all the predictors and find all the correlations from the data based on a cutoff, so basically you can look which questions have correlation with each other and then compares it with the value of interest, in this case, the points.
+
+Also one other thing I found handy since I've worked with two different computers with this data set, that now I can easily migrate between and just use the git to move the data. I also found this function handy, so that I can use the same script in both computers.
+
+```{r, eval=FALSE}
+#working directory to source file location
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path)) #works in Rstudio only
+```
+Basically it sets the working directory to the same as you open the source without changing the settings of R-studio.
 
 
 

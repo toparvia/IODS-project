@@ -117,6 +117,7 @@ m5 <- lm(points ~ attitude + stra, data = learn2014)
 m6 <- lm(points ~ attitude + stra + gender, data = learn2014)
 AIC(m1,m2,m3,m4,m5,m6)
 #By Akaike's information criteria, the model with the best fit is m5, since it is also most parsimonius.
+par(mfrow=c(2,2))
 plot(m5)
 #Model looks good. Residuals have quite even distribution on both sides of zero and there are only few outliers.
 summary(m5)
