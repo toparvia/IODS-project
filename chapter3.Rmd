@@ -89,6 +89,8 @@ m <- glm(G3 ~ alc_use + Walc + age + Medu, family = "gaussian", data = alc3)
 m2 <- glm(G3 ~ alc_use + age + Medu, family = "gaussian", data = alc3)
 deviance(m2)/m2$null.deviance
 AIC(m,m2)
+par(mfrow=c(2,2))
+plot(m2)
 # Akaike information criteria gives similar result, so as hypotised the Walc is dropped as they have covariance, that way we achive the most parsimonious model.
 
 # Model explains (R^2) 91 % of the variation without the help of G1 and G2.
