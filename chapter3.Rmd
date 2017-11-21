@@ -4,10 +4,9 @@ author: "Tuure Parviainen"
 date: "November 19, 2017"
 output: html_document
 ---
+## Chapter 3. Logistic regression
 
-## Chapter 2. Logistic regression
-
-This time I had much less time to use for this exercise, so I used the methods given and didn't try anything extra.
+This time I had much less time to use for this exercise, so I used the methods given mostly.
 
 Data Set Information:
    
@@ -18,22 +17,30 @@ This data approach student achievement in secondary education of two Portuguese 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-```{r}
+
+```{r results='asis', echo=FALSE, include=FALSE,}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
+packages_to_load <- c("dplyr", "caret", "ggcorrplot", "ggplot2", "GGally", "bindrcpp", "lattice")
+lapply(packages_to_load, require, character.only = TRUE)
+# Libraries
+#library(dplyr) # data manipulation
+#library(caret) # findCorrelation algorithm
+#library(ggcorrplot) # plot the correlations
+# other attached packages:
+#  [1] bindrcpp_0.2       fitdistrplus_1.0-9 survival_2.41-3    MASS_7.3-47        GGally_1.3.2       ggcorrplot_0.1.1   caret_6.0-77      
+#  [8] ggplot2_2.2.1      lattice_0.20-35    dplyr_0.7.4  
+```
+
+```{r, message=FALSE, warning=FALSE}
 # To empty the memory after the excercise before this
 rm(list=ls())
 # Load data
+#setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+
 alc <- read.csv(file = "data/ex3alc.csv")
-# Libraries
-library(dplyr) # data manipulation
-library(caret) # findCorrelation algorithm
-library(ggcorrplot) # plot the correlations
-library(ggplot2)
-library(GGally)
-library(ggcorrplot)
-library(caret)
 
 glimpse(alc)
-summary(alc)
+#summary(alc)
 
 # The data set is combined from two different files from the machine learning repository
 
@@ -42,7 +49,7 @@ summary(alc)
 alc2 <- select_if(alc, is.numeric)
 correlations <- abs(cor(alc2, use="pairwise.complete.obs"))
 #correlation of all parameters with absolute numbers
-correlations.selected <- findCorrelation(correlations, cutoff = .5, exact = TRUE)
+correlations.selected <- findCorrelation(correlations, cutoff = .3, exact = TRUE)
 #colums with to select by cutoff 0.7
 #Making sure that grades are part of the correlation table
 grade.columns <- 15:17
@@ -80,10 +87,10 @@ g
 names.selected <- colnames(alc2[correlations.selected])
 alc3 <- subset(alc, select=c(names.selected, "sex", "school", "guardian", "activities"))
 
-p <-ggpairs(alc, mapping = aes(col = sex, alpha = 0.3), lower = list(combo = wrap("facethist", bins = 20)))
+p <-ggpairs(alc3, mapping = aes(col = sex, alpha = 0.3), lower = list(combo = wrap("facethist", bins = 20)))
 p
 
-# The categorial variables are quite similar and does not give much indication other than, that the very alcohol use is higher with males and almost no alcohol use is more common with females.
+# The categorial variables are quite similar and does not give much indication other than, that the high alcohol use is higher with males and almost no alcohol use is more common with females.
 
 m <- glm(G3 ~ alc_use + Walc + age + Medu, family = "gaussian", data = alc3)
 m2 <- glm(G3 ~ alc_use + age + Medu, family = "gaussian", data = alc3)
@@ -99,33 +106,106 @@ plot(m2)
 
 # I suppose I need to do another selection for parameters for this case..
 
-# Maybe this might help...
-https://stackoverflow.com/questions/30618847/how-to-apply-filter-based-feature-selection-for-logistic-regression-in-rs-caret
+# Feature selection based on LASSO (least absolute shrinkage and selection operator) using centering and scaling as preprosessing and then 10-fold crossvalidation
+fit <- sbf(
+  form = alc$alc_use ~ .,
+  data = alc[c(2:27,29:31)], method = "glmnet", # Dalc and Walc are dropped as they are the parameters high_use is based on, D1:D3, dropped as well, since grades are known only after students are done with the studies (especially final exam G3)
+  tuneGrid=expand.grid(.alpha = .01, .lambda = .1),
+  preProc = c("center", "scale"),
+  trControl = trainControl(method = "none"),
+  sbfControl = sbfControl(functions = caretSBF, method = 'cv', number = 10) 
+)
+fit
+
+# Dalc is dropped as it is one of the parameters high_use is based on
+bm  <- glm(high_use ~ failures + absences + freetime + age, data = alc, family = "binomial")
+bm2 <- glm(high_use ~ failures + absences + freetime, data = alc, family = "binomial")
+bm3 <- glm(high_use ~ absences + age + G1+ G2+ G3, data = alc, family = "binomial") # here grades are included
+bm4 <- glm(high_use ~ absences + age + G1, data = alc, family = "binomial") # here grades are included
+bm5 <- glm(high_use ~ failures + absences + freetime + age + goout, data = alc, family = "binomial")
+bm6 <- glm(high_use ~ failures + absences + goout, data = alc, family = "binomial")
+# Stepwise forward and backward selection
+step(bm6, direction = "both")
+AIC(bm,bm2,bm3,bm4,bm5,bm6) # better fit found without grades
+
+# bm6 is the best fit based, preprosessed parameters by centering and scaling, then using feature selection using LASSO with 10-fold crossvalidation , removing confounding parameters.
+# The model was further validated with stepwise forward and backward selection and confirmed checking the Akaike information criteria.
+par(mfrow=c(2,2))
+plot(bm6)
+# The model validation is bit more tricky with binomial models, you won't see such neat plots unless the number of observations is very high (N > 400). In this case plots look ok.
+
+
+# These are loaded only now, since they mask some functions from dplyr
+library(MASS)
+library(fitdistrplus)
+alc_num <- as.numeric(alc$high_use)
+fitBinom=fitdist(data=alc_num, dist="binom", fix.arg=list(size=2), start=list(prob=0.3))
+plot(pnbinom(sort(alc_num), size=2, mu=fitBinom$estimate), ppoints(alc_num))
+abline(0,1)
+# This shows the estimated binomial distribution in our response variable.
 
 # compute odds ratios (OR)
-OR <- coef(m) %>% exp
+OR <- coef(bm6) %>% exp
 # compute confidence intervals (CI)
-CI <- exp(confint(m))
+CI <- exp(confint(bm6))
 cbind(OR, CI)
+
+# predictions
+pred.bm6 <- predict(bm6, type = "response")
+
+# add the predicted probabilities to 'alc'
+alc <- mutate(alc, probability = pred.bm6)
+
+# use the probabilities to make a prediction of high_use
+alc <- mutate(alc, prediction = pred.bm6 > 0.5)
+
+# see the last ten original classes, predicted probabilities, and class predictions
+alc[36:38] %>% tail(10)
+
+# initialize a plot of 'high_use' versus 'probability' in 'alc'
+g <- ggplot(alc, aes(x = c(high_use), y = probability, color = prediction))
+
+# define the geom as points and draw the plot
+g + geom_point()
+
+# tabulate the target variable versus the predictions
+table(high_use = alc$high_use, prediction = alc$prediction) %>% prop.table() %>% addmargins()
+
+# how many are correct
+sum(alc[36]==alc[38])/382
+# 76.178 % are correct
+1-sum(alc[36]==alc[38])/382
+
+# Training error is 23.821 % (DataCamp is 26 %)
+
+# Here is the DataCamp version of training error, (which I find more complicated, but perhaps easier to follow).
+# define a loss function (mean prediction error)
+loss_func <- function(class, prob) {
+  n_wrong <- abs(class - prob) > 0.5
+  mean(n_wrong)
+}
+
+# call loss_func to compute the average number of wrong predictions in the (training) data
+loss_func(class = alc$high_use, prob = alc$probability)
+
+# The model is better than the one introduced in DataCamp
+
 ```
 
 
+```{r}
+# K-fold cross-validation
+library(boot)
+cv <- cv.glm(data = alc, cost = loss_func, glmfit = bm6, K = 10)
+
+# average number of wrong predictions in the cross validation
+cv$delta[1]
+```
+Training error is 23.821 % (not validated) (DataCamp is > 26 %)
+Crossvalidated training error is 24.8699 %
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-#Extra
+#Other notes
 
 ```{r, eval=FALSE}
 # I found this very useful in the DataCamp exercises
@@ -135,24 +215,4 @@ alc %>% group_by(sex, high_use) %>% summarise(count = n(), mean_grade=mean(G3))
 
 ```
 
-
-
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+This weeks exercise was interesting. In the end I tried some new methods I haven't tried before, such as the LASSO feature selection. I wonder how the parameters were selected in the DataCamp exercises? Was the method in any way similar than the LASSO approach I used. I also tested LASSO without the preprosessing and the results differed. That model had much poorer results than the one with preprosessing. I'm curious how that can effect the LASSO results so much.
