@@ -15,9 +15,6 @@ p <-ggpairs(learning2014, mapping = aes(col = gender, alpha = 0.3), lower = list
 ```
 I found this code quite useful for getting an overview of the data. I have previously used a more simple plotting tools for initial analysis such as correlation or histograms separately, but I might use this one again since it provides insight with only one figure.
 
-
-# RStudio Exercise 2
-
 I looked in to the data provided by the excercise. The data has a huge number of different parameters, point estimates and some categorial variables. I used the common commands for simple analysis.
 
 ```{r, eval=FALSE}
@@ -104,7 +101,7 @@ summary(m5)
 # Attitude (Global attitude toward statistics) is highly significant and stra (Organized Studying and Time management) is border case with p > 0.09. Model explains only 20 % of variation of the data. Perhaps further data wrangling might be in order or using better models.
 
 ```
-# Extra
+### Extra
 I did some analysis to find the predictors of the full data, just out interest. I found a different set of predictors that were correlating with the points. 
 
 ```{r, eval=FALSE}

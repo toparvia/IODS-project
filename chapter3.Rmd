@@ -205,7 +205,7 @@ Training error is 23.821 % (not validated) (DataCamp is > 26 %)
 Crossvalidated training error is 24.8699 %
 
 
-#Other notes
+###Other notes
 
 ```{r, eval=FALSE}
 # I found this very useful in the DataCamp exercises

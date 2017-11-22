@@ -141,12 +141,8 @@ $(document).ready(function () {
 <li><a href="#learning-diary">Learning diary</a><ul>
 <li><a href="#chapter-1.">Chapter 1.</a></li>
 <li><a href="#chapter-2.">Chapter 2.</a></li>
-</ul></li>
-<li><a href="#rstudio-exercise-2">RStudio Exercise 2</a></li>
-<li><a href="#extra">Extra</a><ul>
 <li><a href="#chapter-3.-logistic-regression">Chapter 3. Logistic regression</a></li>
 </ul></li>
-<li><a href="#other-notes">Other notes</a></li>
 </ul>
 </div>
 
@@ -204,10 +200,6 @@ p &lt;-ggpairs(learning2014, mapping = aes(col = gender, alpha = 0.3), lower = l
 
 # Data exploration of the learning2014 with ggpairs</code></pre>
 <p>I found this code quite useful for getting an overview of the data. I have previously used a more simple plotting tools for initial analysis such as correlation or histograms separately, but I might use this one again since it provides insight with only one figure.</p>
-</div>
-</div>
-<div id="rstudio-exercise-2" class="section level1">
-<h1>RStudio Exercise 2</h1>
 <p>I looked in to the data provided by the excercise. The data has a huge number of different parameters, point estimates and some categorial variables. I used the common commands for simple analysis.</p>
 <pre class="r"><code>require(readr)
 PKY &lt;- read_delim(&quot;http://www.helsinki.fi/~kvehkala/JYTmooc/JYTOPKYS3-data.txt&quot;, &quot;\t&quot;, escape_double = FALSE, trim_ws = TRUE)
@@ -321,9 +313,8 @@ summary(m5)</code></pre>
 ## Multiple R-squared:  0.2048, Adjusted R-squared:  0.1951 
 ## F-statistic: 20.99 on 2 and 163 DF,  p-value: 7.734e-09</code></pre>
 <pre class="r"><code># Attitude (Global attitude toward statistics) is highly significant and stra (Organized Studying and Time management) is border case with p &gt; 0.09. Model explains only 20 % of variation of the data. Perhaps further data wrangling might be in order or using better models.</code></pre>
-</div>
-<div id="extra" class="section level1">
-<h1>Extra</h1>
+<div id="extra" class="section level3">
+<h3>Extra</h3>
 <p>I did some analysis to find the predictors of the full data, just out interest. I found a different set of predictors that were correlating with the points.</p>
 <pre class="r"><code>library(caret) #findCorrelation algorithm
 library(ggcorrplot) #plot the correlations
@@ -351,6 +342,8 @@ ggcorrplot(corr, hc.order = TRUE,
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path)) #works in Rstudio only</code></pre>
 <p>Basically it sets the working directory to the same as you open the source without changing the settings of R-studio.</p>
 <hr />
+</div>
+</div>
 <div id="chapter-3.-logistic-regression" class="section level2">
 <h2>Chapter 3. Logistic regression</h2>
 <p>This time I had much less time to use for this exercise, so I used the methods given mostly.</p>
@@ -491,16 +484,16 @@ fit</code></pre>
 ## 
 ## Resampling performance:
 ## 
-##    RMSE Rsquared    MAE  RMSESD RsquaredSD   MAESD
-##  0.3553   0.8775 0.2446 0.05111    0.03513 0.02689
+##    RMSE Rsquared   MAE RMSESD RsquaredSD   MAESD
+##  0.3536   0.8823 0.244 0.0616    0.02684 0.03865
 ## 
 ## Using the training set, 15 variables were selected:
 ##    sexM, age, addressU, Fjobservices, reasonother...
 ## 
-## During resampling, the top 5 selected variables (out of a possible 18):
+## During resampling, the top 5 selected variables (out of a possible 17):
 ##    absences (100%), age (100%), failures (100%), freetime (100%), goout (100%)
 ## 
-## On average, 13.8 variables were selected (min = 12, max = 15)</code></pre>
+## On average, 13.4 variables were selected (min = 11, max = 15)</code></pre>
 <pre class="r"><code># Dalc is dropped as it is one of the parameters high_use is based on
 bm  &lt;- glm(high_use ~ failures + absences + freetime + age, data = alc, family = &quot;binomial&quot;)
 bm2 &lt;- glm(high_use ~ failures + absences + freetime, data = alc, family = &quot;binomial&quot;)
@@ -633,17 +626,17 @@ library(boot)</code></pre>
 
 # average number of wrong predictions in the cross validation
 cv$delta[1]</code></pre>
-<pre><code>## [1] 0.2539267</code></pre>
+<pre><code>## [1] 0.2486911</code></pre>
 <p>Training error is 23.821 % (not validated) (DataCamp is &gt; 26 %) Crossvalidated training error is 24.8699 %</p>
-</div>
-</div>
-<div id="other-notes" class="section level1">
-<h1>Other notes</h1>
+<div id="other-notes" class="section level3">
+<h3>Other notes</h3>
 <pre class="r"><code># I found this very useful in the DataCamp exercises
 
 # produce summary statistics by group with piping variable #&gt;#
 alc %&gt;% group_by(sex, high_use) %&gt;% summarise(count = n(), mean_grade=mean(G3))</code></pre>
 <p>This weeks exercise was interesting. In the end I tried some new methods I haven’t tried before, such as the LASSO feature selection. I wonder how the parameters were selected in the DataCamp exercises? Was the method in any way similar than the LASSO approach I used. I also tested LASSO without the preprosessing and the results differed. That model had much poorer results than the one with preprosessing. I’m curious how that can effect the LASSO results so much.</p>
+</div>
+</div>
 </div>
 
 
