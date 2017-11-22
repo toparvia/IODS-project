@@ -1,0 +1,33 @@
+---
+title: "Chapter 4. Clustering and classification"
+author: "Tuure Parviainen"
+date: "November 22, 2017"
+output: html_document
+---
+## Chapter 4. Clustering and classification
+
+
+Boston crime....
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r results='asis', echo=FALSE, include=FALSE,}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
+packages_to_load <- c("dplyr", "caret", "ggcorrplot", "ggplot2", "GGally", "bindrcpp", "lattice")
+lapply(packages_to_load, require, character.only = TRUE)
+```
+
+```{r, message=FALSE, warning=FALSE}
+# To empty the memory after the excercise before this
+rm(list=ls())
+# Load data
+#setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+
+alc <- read.csv(file = "data/ex3alc.csv")
+
+glimpse(alc)
+#summary(alc)
+
