@@ -202,7 +202,7 @@ cv <- cv.glm(data = alc, cost = loss_func, glmfit = bm6, K = 10)
 cv$delta[1]
 ```
 Training error is 23.821 % (not validated) (DataCamp is > 26 %)
-Crossvalidated training error is 24.8699 %
+Cross-validated training error is 24.8699 %
 
 
 ###Other notes
