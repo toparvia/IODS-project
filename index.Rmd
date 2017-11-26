@@ -3,6 +3,7 @@ title: "Tuure Parviainen"
 output:
   html_document:
     theme: simplex
+    css: styles.css
     toc: true
     toc_depth: 2
     fig_caption: true
@@ -24,4 +25,9 @@ output:
 ***
   
 ```{r child = "chapter3.Rmd"}
+```
+
+***
+  
+```{r child = "chapter4.Rmd"}
 ```
