@@ -30,7 +30,7 @@ lstat         | lower status of the population (percent).
 medv          | median value of owner-occupied homes divided by $1000s.
 
 
-```{r results='asis', echo=FALSE, include=FALSE,}
+```{r, message=FALSE, warning=FALSE}
 
 knitr::opts_chunk$set(echo = TRUE, warning=FALSE)
 require("easypackages") # for loading and installing many packages at one time
