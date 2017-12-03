@@ -10,6 +10,8 @@ output:
     fig_width: 6
     fig_height: 4
     code_folding: show
+
+
 ---
 
 ***
@@ -31,3 +33,8 @@ output:
   
 ```{r child = "chapter4.Rmd"}
 ```
+
+***
+```{r child = "chapter5b.Rmd"}
+```
+
